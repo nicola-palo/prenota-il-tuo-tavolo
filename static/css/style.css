@@ -1,0 +1,193 @@
+/**
+ * style.css
+ * Stili globali e tema dinamico per il sistema di gestione ristorante
+ */
+
+/* Variabili tema globale */
+:root {
+  /* Colori e stili principali del tema */
+  --theme-primary: var(--color-primary, #8B4513);      /* Marrone primario */
+  --theme-secondary: var(--color-secondary, #DEB887);  /* Beige secondario */
+  --theme-background: var(--color-background, #FFF8DC); /* Crema sfondo */
+  --theme-font-family: var(--font-family, system-ui);  /* Font di sistema */
+  --theme-font-size: var(--font-size, 16px);          /* Dimensione testo base */
+  --theme-heading-size: var(--heading-size, 24px);     /* Dimensione titoli */
+  --theme-font-weight: var(--font-weight, 400);        /* Spessore font */
+  --theme-border-radius: var(--border-radius, 8px);    /* Arrotondamento bordi */
+  --theme-shadow: var(--shadow-size, 0 2px 4px rgba(0,0,0,0.1)); /* Ombra elementi */
+  
+  /* Colori di sistema */
+  --color-white: #fff;
+  --color-black: #000; 
+  --color-success: #28a745;   /* Verde successo */
+  --color-info: #17a2b8;      /* Blu info */
+  --color-warning: #ffc107;   /* Giallo warning */
+  --color-danger: #dc3545;    /* Rosso errore */
+  --color-border: #dee2e6;    /* Grigio bordi */
+  --color-text: #212529;      /* Nero testo */
+  --color-text-light: #6c757d; /* Grigio testo chiaro */
+  
+  /* Spaziature standard */
+  --spacing-xs: 0.25rem;  /* Extra small */
+  --spacing-sm: 0.5rem;   /* Small */ 
+  --spacing-md: 1rem;     /* Medium */
+  --spacing-lg: 1.5rem;   /* Large */
+  --spacing-xl: 2rem;     /* Extra large */
+}
+
+/* Stili base pagina */
+body {
+  background-color: var(--theme-background);
+  color: var(--color-text);
+  font-family: var(--theme-font-family);
+  font-size: var(--theme-font-size);
+  font-weight: var(--theme-font-weight);
+}
+
+/* Titoli */
+h1, h2, h3, h4, h5, h6 {
+  font-size: var(--theme-heading-size);
+}
+
+/* Cards e contenitori */
+.card {
+  border: 1px solid var(--theme-primary);
+  border-radius: var(--theme-border-radius) !important;
+  box-shadow: var(--theme-shadow) !important;
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
+}
+
+.card-header {
+  background-color: var(--theme-primary) !important;
+  color: var(--color-white);
+  padding: var(--spacing-md);
+  border-radius: 0 !important;
+}
+
+/* Menu dropdown */
+.dropdown-menu {
+  border-radius: var(--theme-border-radius) !important;
+  box-shadow: var(--theme-shadow) !important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--theme-primary);
+  color: var(--color-white);
+}
+
+/* Barra navigazione */
+.navbar {
+  border-radius: 0 !important;
+  box-shadow: var(--theme-shadow) !important;
+  background-color: var(--theme-primary) !important;
+}
+
+/* Pulsanti */
+.btn {
+  border-radius: var(--theme-border-radius);
+  transition: all 0.3s ease;
+}
+
+.btn-wood {
+  background-color: var(--theme-primary);
+  color: var(--color-white);
+  border: none;
+}
+
+.btn-wood:hover {
+  background-color: var(--theme-secondary);
+  color: var(--color-text);
+}
+
+.bg-wood {
+  background-color: var(--theme-primary) !important;
+  color: var(--color-white);
+}
+
+/* Tabelle */
+.table {
+  width: 100%;
+  margin-bottom: var(--spacing-lg);
+}
+
+.table th,
+.table thead.table-dark th {
+  background-color: var(--theme-primary) !important;
+  color: var(--color-white);
+  border-color: var(--theme-secondary);
+  padding: var(--spacing-sm);
+}
+
+.table td {
+  padding: var(--spacing-sm);
+  vertical-align: middle;
+}
+
+/* Righe alternate tabella */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(139, 69, 19, 0.1);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(139, 69, 19, 0.2);
+}
+
+/* Form e input */
+.form-control:focus {
+  border-color: var(--theme-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25);
+}
+
+/* Footer */
+.footer {
+  background-color: var(--theme-primary);
+  color: var(--color-white);
+  padding: var(--spacing-md) 0;
+  margin-top: var(--spacing-xl);
+  width: 100%;
+}
+
+/* Badge di stato */
+.status-badge {
+  border-radius: var(--theme-border-radius);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-white);
+}
+
+.status-future { background-color: var(--color-success); }
+.status-past { background-color: var(--color-text-light); }
+.status-today { background-color: var(--color-info); }
+
+/* Finestre modali */
+.modal-header {
+  background-color: var(--theme-primary);
+  color: var(--color-white);
+  border-bottom: 0;
+  border-top-left-radius: var(--theme-border-radius);
+  border-top-right-radius: var(--theme-border-radius);
+  padding: var(--spacing-md);
+}
+
+.modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.modal-content {
+  border: 1px solid var(--theme-primary);
+  border-radius: var(--theme-border-radius) !important;
+  box-shadow: var(--theme-shadow) !important;
+  overflow: hidden;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--theme-secondary);
+}
+
+/* Media queries per responsive */
+@media (max-width: 768px) {
+  .table-responsive { font-size: 0.875rem; }
+  .btn-sm { padding: var(--spacing-xs) var(--spacing-sm); }
+  .card-body { padding: var(--spacing-sm); }
+}

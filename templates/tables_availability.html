@@ -1,0 +1,95 @@
+<!-- tables_availability.html - Ricerca e prenotazione tavoli -->
+{% extends "base.html" %}
+{% block title %}Tavoli Disponibili{% endblock %}
+{% block content %}
+
+<div class="card">
+   <div class="card-header bg-wood text-white">
+       <h4 class="mb-0">Verifica Disponibilità Tavoli</h4>
+   </div>
+
+   <div class="card-body">
+       <!-- Form ricerca disponibilità -->
+       <form id="availabilityForm">
+           <div class="row">
+               <div class="col-md-4 mb-3">
+                   <label class="form-label">Data</label>
+                   <input type="date" class="form-control" id="date" required 
+                          min="{{ (today + timedelta(days=1)).strftime('%Y-%m-%d') }}" 
+                          max="{{ max_date }}">
+               </div>
+
+               <div class="col-md-4 mb-3">
+                   <label class="form-label">Fascia Oraria</label>
+                   <select class="form-select" id="timeSlot" required disabled>
+                       <option value="">Seleziona prima la data</option>
+                   </select>
+                   <div id="timeSlotInfo" class="form-text text-muted"></div>
+               </div>
+
+               <div class="col-md-4 mb-3">
+                   <label class="form-label">Orario</label>
+                   <select class="form-select" id="time" required disabled>
+                       <option value="">Seleziona prima la fascia oraria</option>
+                   </select>
+                   <div id="time_info" class="form-text"></div>
+               </div>
+
+               <div class="col-md-4 mb-3">
+                   <label class="form-label">Numero di persone</label>
+                   <input type="number" class="form-control" id="guests" min="1" required>
+                   <div class="form-text">Inserisci il numero di persone</div>
+               </div>
+           </div>
+
+           <div class="text-end">
+               <button type="submit" class="btn btn-wood">
+                   Verifica Disponibilità
+               </button>
+           </div>
+       </form>
+
+       <!-- Sezione risultati ricerca -->
+       <div id="results-section" class="mt-4" style="display: none;">
+           <div class="card-body bg-wood">
+               <h5>Tavoli Disponibili</h5>
+               <div id="tables-container" class="row"></div>
+           </div>
+       </div>
+
+       <!-- Sezione conferma prenotazione -->
+       <div id="confirmationSection" class="mt-4" style="display: none;">
+           <div class="card">
+               <div class="card-header">
+                   <h5 class="mb-0">Conferma Prenotazione</h5>
+               </div>
+
+               <div class="card-body">
+                   <div id="bookingDetails" class="card-body card"></div>
+                   <form id="confirmBookingForm">
+                       <div class="mb-3">
+                           <label class="form-label">Note aggiuntive (opzionale)</label>
+                           <textarea id="notes" class="form-control" rows="3" 
+                                   placeholder="Eventuali richieste speciali..."></textarea>
+                       </div>
+                       <div class="text-end">
+                           <button type="button" class="btn btn-secondary me-2" id="changeTableBtn">
+                               Cambia Tavolo
+                           </button>
+                           <button type="submit" class="btn btn-wood">
+                               Conferma Prenotazione
+                           </button>
+                       </div>
+                   </form>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/table-booking-handler.js') }}"></script>
+{% endblock %}

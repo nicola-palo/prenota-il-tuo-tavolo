@@ -1,0 +1,200 @@
+<!-- restaurant_info.html - Gestione informazioni e logo ristorante -->
+{% extends "base.html" %}
+{% block title %}Gestione Informazioni Ristorante{% endblock %}
+{% block content %}
+
+<div class="card">
+    <!-- Header -->
+    <div class="card-header bg-wood text-white">
+        <h4 class="mb-0">Gestione Informazioni Ristorante</h4>
+    </div>
+
+    <div class="card-body">
+        <form id="restaurantInfoForm">
+            <!-- Upload logo -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Logo del Ristorante</label>
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Preview logo corrente -->
+                    <div class="border rounded p-2">
+                        <img id="currentLogo" 
+                             src="{{ info.logo_url if info.logo_url else url_for('static', filename='img/placeholder.png') }}" 
+                             class="img-thumbnail"
+                             style="max-width: 200px; height: 200px; object-fit: contain;"
+                             alt="Logo ristorante">
+                    </div>
+                    <!-- Upload file -->
+                    <div>
+                        <input type="file" class="form-control" id="logoInput" accept=".png,.jpg,.jpeg,.gif">
+                        <small class="text-muted d-block mt-1">
+                            <i class="fas fa-info-circle"></i>
+                            Max 5MB. Formati supportati: PNG, JPG, JPEG, GIF, SVG
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informazioni base contatto -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label fw-bold">Nome Ristorante</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label fw-bold">Telefono</label>
+                    <input type="tel" class="form-control" id="phone" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label fw-bold">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="address" class="form-label fw-bold">Indirizzo</label>
+                    <input type="text" class="form-control" id="address" required>
+                </div>
+            </div>
+
+            <!-- Testi descrittivi -->
+            <div class="mb-3">
+                <label for="welcome_text" class="form-label fw-bold">Testo di Benvenuto</label>
+                <small class="form-text d-block text-muted mb-2">Appare nella parte superiore della homepage</small>
+                <textarea class="form-control" id="welcome_text" rows="3" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label fw-bold">Descrizione Ristorante</label>
+                <small class="form-text d-block text-muted mb-2">Descrizione dettagliata del ristorante</small>
+                <textarea class="form-control" id="description" rows="5" required></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="parking_info" class="form-label fw-bold">Informazioni Parcheggio</label>
+                <textarea class="form-control" id="parking_info" rows="2"></textarea>
+            </div>
+
+            <!-- Pulsanti azione -->
+            <div class="text-end">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-times"></i> Annulla
+                </a>
+                <button type="submit" class="btn btn-wood">
+                    <i class="fas fa-save"></i> Salva Modifiche
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+/**
+ * Gestione form informazioni ristorante 
+ */
+document.addEventListener('DOMContentLoaded', async function() {
+    const form = document.getElementById('restaurantInfoForm');
+
+    /**
+     * Gestione upload logo
+     */
+    document.getElementById('logoInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('logo', file);
+
+        try {
+            const response = await fetch('/api/upload-logo', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            if (!response.ok) throw new Error(data.error);
+            
+            document.getElementById('currentLogo').src = data.url;
+            createAlert('success', 'Logo aggiornato con successo');
+        } catch (error) {
+            createAlert('danger', error.message);
+        }
+    });
+
+    /** 
+     * Carica informazioni dal server
+     */
+    async function loadRestaurantInfo() {
+        try {
+            const response = await APIClient.request('restaurant/info');
+            const info = response.info;
+
+            // Popola campi form
+            document.getElementById('name').value = info.name;
+            document.getElementById('phone').value = info.phone;
+            document.getElementById('email').value = info.email;
+            document.getElementById('address').value = info.address;
+            document.getElementById('welcome_text').value = info.welcome_text;
+            document.getElementById('description').value = info.description;
+            document.getElementById('parking_info').value = info.parking_info || '';
+            document.getElementById('currentLogo').src = info.logo_url || '/static/img/placeholder.png';
+
+        } catch (error) {
+            createAlert('danger', 'Errore nel caricamento delle informazioni: ' + error.message);
+        }
+    }
+
+    /**
+     * Gestione submit form
+     */
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        try {
+            const formData = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                welcome_text: document.getElementById('welcome_text').value,
+                description: document.getElementById('description').value,
+                parking_info: document.getElementById('parking_info').value
+            };
+
+            await APIClient.request('restaurant/info', {
+                method: 'PUT',
+                body: JSON.stringify(formData)
+            });
+
+            createAlert('success', 'Informazioni aggiornate con successo');
+        } catch (error) {
+            createAlert('danger', 'Errore durante il salvataggio: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Carica dati al init
+    await loadRestaurantInfo();
+});
+
+/**
+ * Utility per mostrare alert
+ */
+function createAlert(type, message) {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.querySelector('.card-body').insertAdjacentElement('afterbegin', alert);
+    setTimeout(() => alert.remove(), 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Gestione Prenotazioni{% endblock %}
+{% block content %}
+
+<!-- Card principale prenotazioni -->
+<div class="card shadow">
+  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Gestione Prenotazioni</h5>
+      <div>
+          <button id="refreshButton" class="btn btn-light btn-sm">
+              <i class="fas fa-sync-alt"></i> Aggiorna
+          </button>
+      </div>
+  </div>
+
+  <div class="card-body">
+      <!-- Filtri di ricerca -->
+      <div class="row mb-4">
+          <div class="col-md-3">
+              <div class="form-group">
+                  <label class="form-label">Filtra per Data</label>
+                  <input type="date" id="dateFilter" class="form-control">
+              </div>
+          </div>
+
+          <div class="col-md-3">
+              <div class="form-group">
+                  <label class="form-label">Stato</label>
+                  <select id="statusFilter" class="form-select">
+                      <option value="all">Tutti</option>
+                      <option value="future">Future</option>
+                      <option value="past">Passate</option>
+                      <option value="today">Oggi</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="col-md-3">
+              <div class="form-group">
+                  <label class="form-label">Fascia Oraria</label>
+                  <select id="timeSlotFilter" class="form-select">
+                      <option value="all">Tutte</option>
+                      <option value="lunch">Pranzo</option>
+                      <option value="dinner">Cena</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="col-md-3">
+              <div class="form-group">
+                  <label class="form-label">Cerca Cliente</label>
+                  <input type="text" id="searchFilter" class="form-control" placeholder="Email cliente...">
+              </div>
+          </div>
+      </div>
+
+      <!-- Lista prenotazioni -->
+      <div id="bookingsList">
+          <!-- Il contenuto verrà caricato dinamicamente -->
+      </div>
+  </div>
+</div>
+
+<!-- Modal modifica prenotazione -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Dettagli Prenotazione</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              <form id="editBookingForm">
+                  <input type="hidden" id="bookingId">
+                  
+                  <div class="mb-3">
+                      <label class="form-label">Data</label>
+                      <input type="date" id="editDate" class="form-control" 
+                             min="{{ (today + timedelta(days=1)).strftime('%Y-%m-%d') }}" required>
+                  </div>
+
+                  <div class="mb-3">
+                      <label class="form-label">Fascia Oraria</label>
+                      <select id="editTimeSlot" class="form-select" required>
+                          <option value="">Seleziona fascia oraria</option>
+                          <option value="lunch">Pranzo</option>
+                          <option value="dinner">Cena</option>
+                      </select>
+                  </div>
+
+                  <div class="mb-3">
+                      <label class="form-label">Orario</label>
+                      <select id="editTime" class="form-select" required>
+                          <option value="">Seleziona prima la fascia oraria</option>
+                      </select>
+                  </div>
+
+                  <div class="mb-3">
+                      <label class="form-label">Tavolo</label>
+                      <select id="editTable" class="form-select" required>
+                          <option value="">Seleziona tavolo</option>
+                      </select>
+                  </div>
+
+                  <div class="mb-3">
+                      <label class="form-label">Numero Persone</label>
+                      <select id="editGuests" class="form-select" required>
+                          <option value="">Seleziona</option>
+                          {% for i in range(1, 10) %}
+                              <option value="{{ i }}">{{ i }} person{{ 'a' if i == 1 else 'e' }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+
+                  <div class="mb-3">
+                      <label class="form-label">Note</label>
+                      <textarea id="editNotes" class="form-control" rows="3"></textarea>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+              <button type="button" class="btn btn-wood" id="saveBookingBtn">Salva Modifiche</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/booking-page.js') }}"></script>
+{% endblock %}

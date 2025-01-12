@@ -1,0 +1,83 @@
+<!-- tables.html - Gestione tavoli -->
+{% extends "base.html" %}
+{% block title %}Gestione Tavoli{% endblock %}
+{% block content %}
+
+<div class="row">
+   <!-- Form aggiunta tavolo -->
+   <div class="col-md-4">
+       <div class="card">
+           <div class="card-header bg-wood text-white">
+               <h5 class="mb-0">Aggiungi Tavolo</h5>
+           </div>
+           <div class="card-body">
+               <form id="addTableForm">
+                   <div class="mb-3">
+                       <label for="table_number" class="form-label">Numero Tavolo</label>
+                       <input type="number" class="form-control" id="table_number" required min="1">
+                   </div>
+                   <div class="mb-3">
+                       <label for="table_seats" class="form-label">Numero Posti</label>
+                       <input type="number" class="form-control" id="table_seats" required min="2">
+                       <div class="form-text">Inserisci un numero minimo di 2 posti</div>
+                   </div>
+                   <button type="submit" class="btn btn-wood w-100">Aggiungi Tavolo</button>
+               </form>
+           </div>
+       </div>
+   </div>
+
+   <!-- Lista tavoli -->
+   <div class="col-md-8">
+       <div class="card">
+           <div class="card-header bg-wood text-white">
+               <h5 class="mb-0">Lista Tavoli</h5>
+           </div>
+           <div class="card-body">
+               <div id="tablesList">
+                   <div class="text-center py-4">
+                       <div class="spinner-border text-wood" role="status">
+                           <span class="visually-hidden">Caricamento...</span>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+<!-- Modal modifica tavolo -->
+<div class="modal fade" id="editTableModal" tabindex="-1">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header bg-wood text-white">
+               <h5 class="modal-title">Modifica Tavolo</h5>
+               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+           </div>
+           <div class="modal-body">
+               <form id="editTableForm">
+                   <input type="hidden" id="editTableId">
+                   <div class="mb-3">
+                       <label class="form-label">Numero Tavolo</label>
+                       <input type="number" class="form-control" id="editTableNumber" required min="1">
+                   </div>
+                   <div class="mb-3">
+                       <label class="form-label">Numero Posti</label>
+                       <input type="number" class="form-control" id="editTableSeats" required min="2">
+                       <div class="form-text">Inserisci un numero minimo di 2 posti</div>
+                   </div>
+               </form>
+           </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+               <button type="button" class="btn btn-wood" id="saveTableBtn">Salva</button>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin/tables-management.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,203 @@
+<!-- 
+Template Jinja2 per la gestione orari di apertura del ristorante.
+Estende il template base e consente di:
+- Configurare orari apertura/chiusura per pranzo e cena
+- Gestire chiusure per ogni fascia oraria
+- Visualizzare stato attuale configurazione
+- Ripristinare orari predefiniti
+-->
+
+{% extends "base.html" %}
+{% block title %}Gestione Orari{% endblock %}
+{% block content %}
+
+<div class="row">
+   <div class="col-12">
+       <div class="card">
+           <!-- Header sezione -->
+           <div class="card-header bg-wood">
+               <h5 class="mb-0">Gestione Orari di Apertura</h5>
+           </div>
+
+           <div class="card-body bg-light">
+               <!-- Form principale -->
+               <form id="hoursForm">
+                   {% set days = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'] %}
+                   {% for i in range(7) %}
+                       <!-- Card giorno -->
+                       <div class="card mb-3">
+                           <!-- Header giorno -->
+                           <div class="card-header bg-wood">
+                               <h6 class="mb-0">{{ days[i] }}</h6>
+                           </div>
+                           
+                           <!-- Sezione orari pranzo -->
+                           <div class="card-body border-bottom">
+                               <!-- Checkbox chiusura pranzo -->
+                               <div class="row align-items-center mb-2">
+                                   <div class="col">
+                                       <div class="form-check">
+                                           <input type="checkbox" class="form-check-input is-lunch-closed" 
+                                                  id="lunch_closed_{{ i }}" data-day="{{ i }}"
+                                                  {% if hours[i].is_lunch_closed %}checked{% endif %}>
+                                           <label class="form-check-label" for="lunch_closed_{{ i }}">
+                                               Pranzo - Chiuso
+                                           </label>
+                                       </div>
+                                   </div>
+                               </div>
+
+                               <!-- Selettori orario pranzo (11:00-16:00) -->
+                               <div id="lunch_times_{{ i }}" class="time-inputs" 
+                                    {% if hours[i].is_lunch_closed %}style="display: none;"{% endif %}>
+                                   <div class="row">
+                                       <!-- Orario apertura pranzo -->
+                                       <div class="col-md-6">
+                                           <div class="mb-3">
+                                               <label class="form-label">Orario Apertura Pranzo</label>
+                                               <select class="form-select lunch-opening-time" data-day="{{ i }}">
+                                                   {% for hour in range(11, 16) %}
+                                                       {% for minute in [0, 30] %}
+                                                           {% set time = '{:02d}:{:02d}'.format(hour, minute) %}
+                                                           <option value="{{ time }}" 
+                                                               {% if hours[i].lunch_opening_time.strftime('%H:%M') == time %}selected{% endif %}>
+                                                               {{ time }}
+                                                           </option>
+                                                       {% endfor %}
+                                                   {% endfor %}
+                                               </select>
+                                           </div>
+                                       </div>
+                                       <!-- Orario chiusura pranzo -->
+                                       <div class="col-md-6">
+                                           <div class="mb-3">
+                                               <label class="form-label">Orario Chiusura Pranzo</label>
+                                               <select class="form-select lunch-closing-time" data-day="{{ i }}">
+                                                   {% for hour in range(11, 16) %}
+                                                       {% for minute in [0, 30] %}
+                                                           {% set time = '{:02d}:{:02d}'.format(hour, minute) %}
+                                                           <option value="{{ time }}"
+                                                               {% if hours[i].lunch_closing_time.strftime('%H:%M') == time %}selected{% endif %}>
+                                                               {{ time }}
+                                                           </option>
+                                                       {% endfor %}
+                                                   {% endfor %}
+                                               </select>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+
+                           <!-- Sezione orari cena -->
+                           <div class="card-body">
+                               <!-- Checkbox chiusura cena -->
+                               <div class="row align-items-center mb-2">
+                                   <div class="col">
+                                       <div class="form-check">
+                                           <input type="checkbox" class="form-check-input is-dinner-closed" 
+                                                  id="dinner_closed_{{ i }}" data-day="{{ i }}"
+                                                  {% if hours[i].is_dinner_closed %}checked{% endif %}>
+                                           <label class="form-check-label" for="dinner_closed_{{ i }}">
+                                               Cena - Chiuso
+                                           </label>
+                                       </div>
+                                   </div>
+                               </div>
+
+                               <!-- Selettori orario cena (18:00-24:00) -->
+                               <div id="dinner_times_{{ i }}" class="time-inputs"
+                                    {% if hours[i].is_dinner_closed %}style="display: none;"{% endif %}>
+                                   <div class="row">
+                                       <!-- Orario apertura cena -->
+                                       <div class="col-md-6">
+                                           <div class="mb-3">
+                                               <label class="form-label">Orario Apertura Cena</label>
+                                               <select class="form-select dinner-opening-time" data-day="{{ i }}">
+                                                   {% for hour in range(18, 24) %}
+                                                       {% for minute in [0, 30] %}
+                                                           {% set time = '{:02d}:{:02d}'.format(hour, minute) %}
+                                                           <option value="{{ time }}"
+                                                               {% if hours[i].dinner_opening_time.strftime('%H:%M') == time %}selected{% endif %}>
+                                                               {{ time }}
+                                                           </option>
+                                                       {% endfor %}
+                                                   {% endfor %}
+                                               </select>
+                                           </div>
+                                       </div>
+                                       <!-- Orario chiusura cena -->
+                                       <div class="col-md-6">
+                                           <div class="mb-3">
+                                               <label class="form-label">Orario Chiusura Cena</label>
+                                               <select class="form-select dinner-closing-time" data-day="{{ i }}">
+                                                   {% for hour in range(18, 24) %}
+                                                       {% for minute in [0, 30] %}
+                                                           {% set time = '{:02d}:{:02d}'.format(hour, minute) %}
+                                                           <option value="{{ time }}"
+                                                               {% if hours[i].dinner_closing_time.strftime('%H:%M') == time %}selected{% endif %}>
+                                                               {{ time }}
+                                                           </option>
+                                                       {% endfor %}
+                                                   {% endfor %}
+                                               </select>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+
+                           <!-- Footer con riepilogo orari correnti -->
+                           <div class="card-footer bg-light">
+                               <div id="current_hours_{{ i }}">
+                                   <strong>Stato attuale:</strong><br>
+                                   <!-- Stato pranzo -->
+                                   <span class="me-3">
+                                       Pranzo: 
+                                       {% if hours[i].is_lunch_closed %}
+                                           <span class="badge bg-danger">Chiuso</span>
+                                       {% else %}
+                                           <span class="badge bg-success">
+                                               {{ hours[i].lunch_opening_time.strftime('%H:%M') }} - 
+                                               {{ hours[i].lunch_closing_time.strftime('%H:%M') }}
+                                           </span>
+                                       {% endif %}
+                                   </span>
+                                   <!-- Stato cena -->
+                                   <span>
+                                       Cena: 
+                                       {% if hours[i].is_dinner_closed %}
+                                           <span class="badge bg-danger">Chiuso</span>
+                                       {% else %}
+                                           <span class="badge bg-success">
+                                               {{ hours[i].dinner_opening_time.strftime('%H:%M') }} - 
+                                               {{ hours[i].dinner_closing_time.strftime('%H:%M') }}
+                                           </span>
+                                       {% endif %}
+                                   </span>
+                               </div>
+                           </div>
+                       </div>
+                   {% endfor %}
+
+                   <!-- Bottoni azione form -->
+                   <div class="text-end mt-4">
+                       <button type="button" class="btn btn-secondary me-2" id="resetButton">
+                           Ripristina Orari Predefiniti
+                       </button>
+                       <button type="submit" class="btn btn-wood">
+                           Salva Modifiche
+                       </button>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% endblock %}
+
+<!-- Carica JavaScript gestione orari -->
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin/hours-management.js') }}"></script>
+{% endblock %}

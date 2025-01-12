@@ -1,0 +1,103 @@
+<!-- index.html - Homepage pubblica -->
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<!-- Hero section con logo e CTA -->
+<div class="text-center py-4">
+  <div class="mb-4">
+      <img src="{{ info.logo_url if info.logo_url else url_for('static', filename='img/placeholder.png') }}"
+           alt="Logo {{ info.name }}" 
+           class="img-fluid" 
+           style="max-height: 200px;">
+  </div>
+  <h1 class="display-3 mb-3">Benvenuto al {{ info.name }}</h1>
+  <p class="lead">{{ info.welcome_text }}</p>
+
+  <!-- CTA condizionale -->
+  {% if current_user.is_authenticated %}
+      <a href="{{ url_for('tables_availability') }}" class="btn btn-wood btn-lg">Prenota un tavolo</a>
+  {% else %}
+      <div class="mt-3">
+          <p>Accedi o registrati per prenotare un tavolo</p>
+          <a href="{{ url_for('login') }}" class="btn btn-wood me-2">Login</a>
+          <a href="{{ url_for('register') }}" class="btn btn-wood">Registrati</a>
+      </div>
+  {% endif %}
+</div>
+
+<!-- Info ristorante -->
+<div class="row mb-4">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-header bg-wood text-white">
+              <h5 class="card-title mb-0">Il Nostro Ristorante</h5>
+          </div>
+          <div class="card-body">
+              {{ info.description }}
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Orari e contatti -->
+<div class="row">
+  <!-- Orari apertura -->
+  <div class="col-md-6 mb-4">
+      <div class="card h-100">
+          <div class="card-header bg-wood text-white">
+              <h5 class="card-title mb-0">Orari di Apertura</h5>
+          </div>
+          <div class="card-body">
+              {% set days = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'] %}
+              {% for day_idx in range(7) %}
+                  {% set hours = get_restaurant_hours(day_idx) %}
+                  <div class="mb-2">
+                      <strong>{{ days[day_idx] }}:</strong><br>
+                      <div class="ms-3">
+                          <span class="text-muted">Pranzo:</span>
+                          {% if hours.is_lunch_closed %}
+                              <span class="text-danger">Chiuso</span>
+                          {% else %}
+                              {{ hours.lunch_opening_time.strftime('%H:%M') }} - {{ hours.lunch_closing_time.strftime('%H:%M') }}
+                          {% endif %}
+                          <br>
+                          <span class="text-muted">Cena:</span>
+                          {% if hours.is_dinner_closed %}
+                              <span class="text-danger">Chiuso</span>
+                          {% else %}
+                              {{ hours.dinner_opening_time.strftime('%H:%M') }} - {{ hours.dinner_closing_time.strftime('%H:%M') }}
+                          {% endif %}
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+
+  <!-- Info contatti -->
+  <div class="col-md-6 mb-4">
+      <div class="card h-100">
+          <div class="card-header bg-wood text-white">
+              <h5 class="card-title mb-0">Contatti</h5>
+          </div>
+          <div class="card-body">
+              <ul class="list-unstyled">
+                  <li class="mb-3"><strong>Telefono:</strong><br>{{ info.phone }}</li>
+                  <li class="mb-3"><strong>Email:</strong><br>{{ info.email }}</li>
+                  <li class="mb-3"><strong>Indirizzo:</strong><br>{{ info.address }}</li>
+                  <li><strong>Parcheggio:</strong><br>{{ info.parking_info }}</li>
+              </ul>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Link admin -->
+{% if current_user.is_authenticated and current_user.is_admin %}
+  <div class="text-center">
+      <a href="{{ url_for('admin_hours') }}" class="btn btn-wood">Gestisci Orari di Apertura</a>
+  </div>
+{% endif %}
+
+{% endblock %}

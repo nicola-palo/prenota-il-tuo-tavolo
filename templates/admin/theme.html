@@ -1,0 +1,125 @@
+<!-- theme.html - Gestione tema UI -->
+{% extends "base.html" %}
+{% block title %}Gestione Tema{% endblock %}
+
+{% block content %}
+<div class="row">
+   <!-- Form personalizzazione tema -->
+   <div class="col-md-8">
+       <div class="card">
+           <div class="card-header bg-wood text-white">
+               <h5 class="mb-0">Personalizzazione Tema</h5>
+           </div>
+           <div class="card-body">
+               <form id="themeForm">
+                   <!-- Colori -->
+                   <h6 class="border-bottom pb-2">Colori</h6>
+                   <div class="row mb-4">
+                       <div class="col-md-4">
+                           <label class="form-label">Colore Primario</label>
+                           <input type="color" class="form-control form-control-color w-100" id="primaryColor">
+                       </div>
+                       <div class="col-md-4">
+                           <label class="form-label">Colore Secondario</label>
+                           <input type="color" class="form-control form-control-color w-100" id="secondaryColor">
+                       </div>
+                       <div class="col-md-4">
+                           <label class="form-label">Sfondo</label>
+                           <input type="color" class="form-control form-control-color w-100" id="backgroundColor">
+                       </div>
+                   </div>
+
+                   <!-- Tipografia -->
+                   <h6 class="border-bottom pb-2">Tipografia</h6>
+                   <div class="row mb-4">
+                       <div class="col-md-6">
+                           <label class="form-label">Font</label>
+                           <select class="form-select" id="fontFamily">
+                               <option value="system-ui">System Default</option>
+                               <option value="Arial">Arial</option>
+                               <option value="Georgia">Georgia</option>
+                               <option value="Verdana">Verdana</option>
+                               <option value="Helvetica">Helvetica</option>
+                           </select>
+                       </div>
+                       <div class="col-md-6">
+                           <label class="form-label">Dimensione Base Font (px)</label>
+                           <input type="range" class="form-range" id="baseFontSize" min="12" max="20" step="1">
+                           <div class="text-center" id="baseFontSizeValue"></div>
+                       </div>
+                   </div>
+
+                   <div class="row mb-4">
+                       <div class="col-md-6">
+                           <label class="form-label">Dimensione Titoli (px)</label>
+                           <input type="range" class="form-range" id="headingFontSize" min="20" max="36" step="2">
+                           <div class="text-center" id="headingFontSizeValue"></div>
+                       </div>
+                       <div class="col-md-6">
+                           <label class="form-label">Peso Font</label>
+                           <select class="form-select" id="fontWeight">
+                               <option value="300">Light</option>
+                               <option value="400">Regular</option>
+                               <option value="500">Medium</option>
+                               <option value="600">Semi Bold</option>
+                               <option value="700">Bold</option>
+                           </select>
+                       </div>
+                   </div>
+
+                   <!-- Layout -->
+                   <h6 class="border-bottom pb-2">Layout</h6>
+                   <div class="mb-4">
+                       <div class="form-check">
+                           <input type="checkbox" class="form-check-input" id="showRestaurantName" checked>
+                           <label class="form-check-label" for="showRestaurantName">
+                               Mostra nome ristorante nella barra di navigazione
+                           </label>
+                       </div>
+                   </div>
+
+                   <!-- Componenti -->
+                   <h6 class="border-bottom pb-2">Componenti</h6>
+                   <div class="row mb-4">
+                       <div class="col-md-6">
+                           <label class="form-label">Border Radius (px)</label>
+                           <input type="range" class="form-range" id="borderRadius" min="0" max="20" step="2">
+                           <div class="text-center" id="borderRadiusValue"></div>
+                       </div>
+                       <div class="col-md-6">
+                           <label class="form-label">Intensità Ombre</label>
+                           <input type="range" class="form-range" id="shadowIntensity" min="0" max="20" step="2">
+                           <div class="text-center" id="shadowIntensityValue"></div>
+                       </div>
+                   </div>
+
+                   <div class="text-end">
+                       <button type="submit" class="btn btn-wood">Salva Tema</button>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>
+
+   <!-- Preview tema -->
+   <div class="col-md-4">
+       <div class="card">
+           <div class="card-header bg-wood text-white">
+               <h5 class="mb-0">Anteprima</h5>
+           </div>
+           <div class="card-body" id="themePreview">
+               <h4 class="preview-heading">Titolo di Esempio</h4>
+               <p class="preview-text">Questo è un testo di esempio per visualizzare il font e le dimensioni selezionate.</p>
+               <div class="preview-card">
+                   <div class="p-3">Esempio Card</div>
+               </div>
+               <button class="btn btn-wood mt-3">Bottone Esempio</button>
+           </div>
+       </div>
+   </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin/theme-management.js') }}"></script>
+{% endblock %}

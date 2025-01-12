@@ -1,0 +1,179 @@
+<!-- base.html - Template principale per tutte le pagine -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <!-- Meta tag e configurazione tema dinamico -->
+  {% set info = get_restaurant_info() %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} - {{ info.name }}</title>
+
+  <!-- Favicon dinamico -->
+  {% if info and info.logo_url %}
+      <link rel="icon" type="image/png" href="{{ info.logo_url }}">
+  {% else %}
+      <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/placeholder.png') }}">
+  {% endif %}
+  
+  <!-- CSS esterni e custom -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  
+  <!-- CSS aggiuntivi specifici delle pagine -->
+  {% block styles %}{% endblock %}
+
+  <!-- Variabili CSS tema -->
+  <style>
+      :root {
+          --color-primary: {{ info.primary_color }};
+          --color-secondary: {{ info.secondary_color }};
+          --color-background: {{ info.background_color }};
+          --font-family: {{ info.font_family }};
+          --font-size: {{ info.base_font_size }};
+          --heading-size: {{ info.heading_font_size }};
+          --font-weight: {{ info.font_weight }};
+          --border-radius: {{ info.border_radius }};
+          --shadow-size: {{ info.box_shadow }};
+      }
+  </style>
+</head>
+<body>
+  <!-- Navbar principale -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-wood mb-4">
+      <div class="container">
+          <!-- Logo e nome ristorante -->
+          <a class="navbar-brand" href="{{ url_for('index') }}">
+              {% if info and info.logo_url %}
+                  <img src="{{ info.logo_url }}" alt="Logo" height="30" class="d-inline-block align-text-top me-2">
+              {% else %}
+                  <img src="{{ url_for('static', filename='img/placeholder.png') }}" alt="Logo Default" height="30" class="d-inline-block align-text-top me-2">
+              {% endif %}
+              {% if info.show_restaurant_name %}
+                  {{ info.name }}
+              {% endif %}
+          </a>
+
+          <!-- Toggle menu mobile -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          
+          <!-- Menu di navigazione -->
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav me-auto">
+                  <!-- Item base -->
+                  <li class="nav-item">
+                      <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" 
+                         href="{{ url_for('index') }}">Home</a>
+                  </li>
+                  
+                  <!-- Items per utenti autenticati -->
+                  {% if current_user.is_authenticated %}
+                      <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint == 'tables_availability' %}active{% endif %}" 
+                             href="{{ url_for('tables_availability') }}">Prenota</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint == 'booking' %}active{% endif %}" 
+                             href="{{ url_for('booking') }}">
+                              Le Mie Prenotazioni
+                              {% if current_user.is_admin %}
+                              <span class="badge bg-warning text-dark">Admin</span>
+                              {% endif %}
+                          </a>
+                      </li>
+                      
+                      <!-- Menu admin -->
+                      {% if current_user.is_admin %}
+                          <li class="nav-item dropdown">
+                              <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" 
+                                 role="button" data-bs-toggle="dropdown">
+                                  Amministrazione
+                              </a>
+                              <ul class="dropdown-menu">
+                                  <li>
+                                      <a class="dropdown-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" 
+                                         href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                                  </li>
+                                  <li>
+                                      <a class="dropdown-item {% if request.endpoint == 'admin_hours' %}active{% endif %}" 
+                                         href="{{ url_for('admin_hours') }}">Gestione Orari</a>
+                                  </li>
+                                  <li>
+                                      <a class="dropdown-item {% if request.endpoint == 'admin_tables' %}active{% endif %}" 
+                                         href="{{ url_for('admin_tables') }}">Gestione Tavoli</a>
+                                  </li>
+                                  <li>
+                                      <a class="dropdown-item {% if request.endpoint == 'admin_restaurant_info' %}active{% endif %}" 
+                                         href="{{ url_for('admin_restaurant_info') }}">Gestione Informazioni</a>
+                                  </li>
+                                  <li>
+                                      <a class="dropdown-item {% if request.endpoint == 'admin_theme' %}active{% endif %}" 
+                                         href="{{ url_for('admin_theme') }}">Gestione Tema</a>
+                                  </li>
+                              </ul>
+                          </li>
+                      {% endif %}
+                  {% endif %}
+              </ul>
+              
+              <!-- Menu utente -->
+              <ul class="navbar-nav">
+                  {% if current_user.is_authenticated %}
+                      <li class="nav-item">
+                          <span class="nav-link">{{ current_user.email }}</span>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                      </li>
+                  {% else %}
+                      <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}" 
+                             href="{{ url_for('login') }}">Login</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint == 'register' %}active{% endif %}" 
+                             href="{{ url_for('register') }}">Registrati</a>
+                      </li>
+                  {% endif %}
+              </ul>
+          </div>
+      </div>
+  </nav>
+
+  <!-- Contenuto principale -->
+  <main class="container">
+      <!-- Alert messaggi flash -->
+      {% with messages = get_flashed_messages() %}
+          {% if messages %}
+              {% for message in messages %}
+                  <div class="alert alert-info alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+      
+      <!-- Blocco contenuto specifico pagina -->
+      {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer mt-3 py-3">
+      <div class="container text-center">
+          <span>&copy; 2024 {{ info.name }} - Created by Nicola Palo</span>
+      </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/restaurant-hours-manager.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <!-- JavaScript aggiuntivo specifico pagina -->
+  {% block scripts %}{% endblock %}
+</body>
+</html>

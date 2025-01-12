@@ -1,0 +1,72 @@
+<!-- login.html - Form per login utenti -->
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+   <div class="col-md-6">
+       <div class="card">
+           <div class="card-header">
+               <h4 class="mb-0">Login</h4>
+           </div>
+           <div class="card-body">
+               <!-- Form login -->
+               <form id="loginForm">
+                   <div class="mb-3">
+                       <label for="email" class="form-label">Email</label>
+                       <input type="email" class="form-control" id="email" required>
+                   </div>
+
+                   <div class="mb-3">
+                       <label for="password" class="form-label">Password</label>
+                       <input type="password" class="form-control" id="password" required>
+                   </div>
+
+                   <!-- Alert errori -->
+                   <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+
+                   <button type="submit" class="btn btn-wood w-100">Accedi</button>
+
+                   <!-- Link registrazione -->
+                   <div class="mt-3 text-center">
+                       Non hai un account? <a href="{{ url_for('register') }}">Registrati</a>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+   const loginForm = document.getElementById('loginForm');
+   const loginError = document.getElementById('loginError');
+
+   loginForm.addEventListener('submit', async function(e) {
+       e.preventDefault();
+       const submitBtn = loginForm.querySelector('button[type="submit"]');
+       submitBtn.disabled = true;
+       loginError.style.display = 'none';
+
+       try {
+           const response = await APIClient.request('auth/login', {
+               method: 'POST',
+               body: JSON.stringify({
+                   email: document.getElementById('email').value,
+                   password: document.getElementById('password').value
+               })
+           });
+
+           window.location.href = '/';
+       } catch (error) {
+           loginError.textContent = error.message;
+           loginError.style.display = 'block';
+           submitBtn.disabled = false;
+       }
+   });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+Prenota-il-tuo-Tavolo/
+
+	static/
+		css/
+			style.css  # Stili CSS globali
+		js/
+			api-client.js  # Client HTTP per chiamate API REST
+			main.js # Funzioni utility globali e autenticazione
+			booking-page.js # Gestione prenotazioni (visualizza/modifica/cancella)
+			table-booking-handler.js # Gestione prenotazione tavoli
+			color-manager.js  # Gestione colori tema UI
+			restaurant-hours-manager.js  # Gestione orari ristorante
+			
+			admin/
+				hours-management.js # Gestione orari apertura
+				tables-management.js # CRUD tavoli
+				theme-management.js # Gestione tema UI
+	templates/
+		base.html   # Template principale con navbar/layout
+		booking.html # Pagina gestione prenotazioni utente
+		index.html # Homepage pubblica
+		login.html # Form login
+		register.html # Form registrazione
+		tables_availability.html  # Ricerca e prenotazione tavoli
+		
+		admin/	
+			dashboard.html # Dashboard principale admin
+			hours.html # Gestione orari apertura
+			resturant_info.html # Info e configurazione ristorante
+			tables.html # Gestione tavoli
+ 			theme.html # Personalizzazione tema
+
+	api_routes.py # API REST per operazioni CRUD/business logic
+	app.py # File principale Flask (config/routing)
+	models.py # Modelli database SQLAlchemy
+	requirements.txt # Dipendenze Python
+	test.py # Test unitari API principali
+	reset-db.py # Script inizializzazione database
+	

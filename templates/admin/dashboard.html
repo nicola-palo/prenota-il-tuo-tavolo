@@ -1,0 +1,195 @@
+<!-- dashboard.html - Dashboard amministrazione -->
+{% extends "base.html" %}
+{% block title %}Dashboard Admin{% endblock %}
+{% block content %}
+
+<div class="row">
+   <!-- Stats Cards -->
+   <div class="col-md-12 mb-4">
+       <div id="statsCards" class="row">
+           <!-- Popolato dinamicamente -->
+       </div>
+   </div>
+
+   <div class="col-md-12">
+       <div class="row">
+           <!-- Card Info Ristorante -->
+           <div class="col-md-4 mb-4">
+               <div class="card h-100">
+                   <div class="card-header bg-wood text-white">
+                       <h5 class="mb-0">Informazioni Ristorante</h5>
+                   </div>
+                   <div class="card-body">
+                       <p>Gestisci le informazioni generali del ristorante, contatti e descrizioni.</p>
+                       <a href="{{ url_for('admin_restaurant_info') }}" class="btn btn-wood w-100">
+                           Gestisci Informazioni
+                       </a>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Card Tavoli -->
+           <div class="col-md-4 mb-4">
+               <div class="card h-100">
+                   <div class="card-header bg-wood text-white">
+                       <h5 class="mb-0">Gestione Tavoli</h5>
+                   </div>
+                   <div class="card-body">
+                       <p>Gestisci i tavoli del ristorante, aggiungi, modifica o rimuovi tavoli.</p>
+                       <a href="{{ url_for('admin_tables') }}" class="btn btn-wood w-100">
+                           Gestisci Tavoli
+                       </a>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Card Orari -->
+           <div class="col-md-4 mb-4">
+               <div class="card h-100">
+                   <div class="card-header bg-wood text-white">
+                       <h5 class="mb-0">Orari Apertura</h5>
+                   </div>
+                   <div class="card-body">
+                       <p>Gestisci gli orari di apertura del ristorante per ogni giorno della settimana.</p>
+                       <a href="{{ url_for('admin_hours') }}" class="btn btn-wood w-100">
+                           Gestisci Orari
+                       </a>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Card Tema -->
+           <div class="col-md-4 mb-4">
+               <div class="card h-100">
+                   <div class="card-header bg-wood text-white">
+                       <h5 class="mb-0">Gestione Tema</h5>
+                   </div>
+                   <div class="card-body">
+                       <p>Personalizza l'aspetto del sito: colori, font, stile e layout.</p>
+                       <a href="{{ url_for('admin_theme') }}" class="btn btn-wood w-100">
+                           Gestisci Tema
+                       </a>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Card Prenotazioni Recenti -->
+           <div class="col-md-12">
+               <div class="card">
+                   <div class="card-header bg-wood text-white d-flex justify-content-between align-items-center">
+                       <h5 class="mb-0">Prenotazioni Recenti</h5>
+                       <a href="{{ url_for('booking') }}" class="btn btn-wood">
+                           Vedi Tutte le Prenotazioni <i class="fas fa-arrow-right"></i>
+                       </a>
+                   </div>
+                   <div class="card-body">
+                       <div id="recentBookings" class="table-responsive">
+                           <div class="text-center py-4">
+                               <div class="spinner-border text-wood" role="status">
+                                   <span class="visually-hidden">Caricamento...</span>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Caricamento e aggiornamento dati dashboard
+document.addEventListener('DOMContentLoaded', async function() {
+   async function loadDashboardData() {
+       try {
+           const response = await APIClient.request('admin/stats');
+           
+           // Render stats cards
+           document.getElementById('statsCards').innerHTML = `
+               <div class="col-md-3">
+                   <div class="card text-center">
+                       <div class="card-body">
+                           <h3>${response.total_bookings}</h3>
+                           <p class="mb-0">Prenotazioni Totali</p>
+                       </div>
+                   </div>
+               </div>
+               <div class="col-md-3">
+                   <div class="card text-center">
+                       <div class="card-body">
+                           <h3>${response.today_bookings}</h3>
+                           <p class="mb-0">Prenotazioni Oggi</p>
+                       </div>
+                   </div>
+               </div>
+               <div class="col-md-3">
+                   <div class="card text-center">
+                       <div class="card-body">
+                           <h3>${response.total_users}</h3>
+                           <p class="mb-0">Utenti Registrati</p>
+                       </div>
+                   </div>
+               </div>
+               <div class="col-md-3">
+                   <div class="card text-center">
+                       <div class="card-body">
+                           <h3>${response.total_tables}</h3>
+                           <p class="mb-0">Tavoli Totali</p>
+                       </div>
+                   </div>
+               </div>`;
+
+           // Render tabella prenotazioni recenti
+           const today = new Date().toISOString().split('T')[0];
+           document.getElementById('recentBookings').innerHTML = response.recent_bookings.length ? `
+               <table class="table">
+                   <thead>
+                       <tr>
+                           <th>Data</th>
+                           <th>Fascia</th>
+                           <th>Ora</th>
+                           <th>Cliente</th>
+                           <th>Tavolo</th>
+                           <th>Persone</th>
+                           <th>Stato</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       ${response.recent_bookings.map(booking => {
+                           const timeSlot = parseInt(booking.time.split(':')[0]) < 17 ? 'Pranzo' : 'Cena';
+                           return `
+                               <tr>
+                                   <td>${booking.date}</td>
+                                   <td><span class="badge bg-info">${timeSlot}</span></td>
+                                   <td>${booking.time}</td>
+                                   <td>${booking.user_email}</td>
+                                   <td>Tavolo ${booking.table_number}</td>
+                                   <td>${booking.guests}</td>
+                                   <td>
+                                       <span class="badge ${booking.date < today ? 'bg-secondary' : 
+                                                       booking.date === today ? 'bg-success' : 'bg-primary'}">
+                                           ${booking.date < today ? 'Passata' : 
+                                           booking.date === today ? 'Oggi' : 'Futura'}
+                                       </span>
+                                   </td>
+                               </tr>
+                           `;
+                       }).join('')}
+                   </tbody>
+               </table>
+           ` : '<p class="text-center">Nessuna prenotazione recente</p>';
+
+       } catch (error) {
+           console.error('Error loading dashboard data:', error);
+           createAlert('danger', 'Errore nel caricamento dei dati: ' + error.message);
+       }
+   }
+
+   await loadDashboardData();
+   setInterval(loadDashboardData, 300000); // Aggiorna ogni 5 minuti
+});
+</script>
+{% endblock %}
