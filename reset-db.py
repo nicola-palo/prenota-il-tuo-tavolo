@@ -84,12 +84,9 @@ def reset_db():
         print("Email: admin@example.com")
         print("Password: Admin@123")
         print("\nOrari predefiniti:")
-        print("Giorni feriali (Lun-Ven):")
+        print("Giorni feriali (Lun-Dom):")
         print("- Pranzo: 12:00-15:00")
         print("- Cena: 19:00-23:00")
-        print("Weekend (Sab-Dom):")
-        print("- Pranzo: 12:00-16:00")
-        print("- Cena: 19:00-23:30")
 
 # Esegui il reset solo se lo script viene eseguito direttamente
 if __name__ == '__main__':
