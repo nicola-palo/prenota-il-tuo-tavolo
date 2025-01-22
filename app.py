@@ -41,9 +41,12 @@ def get_restaurant_hours(day):
     if not hours:
         return RestaurantHours(
             day_of_week=day,
-            opening_time=datetime.strptime('12:00', '%H:%M').time(),
-            closing_time=datetime.strptime('23:00', '%H:%M').time(),
-            is_closed=False
+            lunch_opening_time=datetime.strptime('12:00', '%H:%M').time(),
+            lunch_closing_time=datetime.strptime('15:00', '%H:%M').time(),
+            dinner_opening_time=datetime.strptime('19:00', '%H:%M').time(),
+            dinner_closing_time=datetime.strptime('23:00', '%H:%M').time(),
+            is_lunch_closed=False,
+            is_dinner_closed=False
         )
     return hours
 
