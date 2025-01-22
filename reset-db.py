@@ -1,25 +1,23 @@
 """
 reset-db.py
-Script per inizializzare il database con dati predefiniti
+Script per inizializzare il database con dati predefiniti:
+- Account amministratore
+- Tavoli di esempio con diverse capacità
+- Orari settimanali (diversi per feriali e weekend)
+- Informazioni base del ristorante
 """
 from app import app, db
 from models import User, Table, Booking, RestaurantHours, RestaurantInfo
 from werkzeug.security import generate_password_hash
 from datetime import datetime, time
 
-"""Reset completo DB con dati di default:
-   - Admin (admin@example.com)
-   - 8 tavoli con capacità variabile in base al numero
-   - Orari settimanali (12-15 pranzo, 19-23 cena)
-   - Info ristorante base
-   """
 def reset_db():
     with app.app_context():
-        # Drop and recreate all tables
+        # Elimina e ricrea tutte le tabelle
         db.drop_all()
         db.create_all()
 
-        # Create admin user
+        # Crea utente amministratore predefinito
         admin = User(
             email='admin@example.com',
             is_admin=True
@@ -27,52 +25,41 @@ def reset_db():
         admin.set_password('Admin@123')
         db.session.add(admin)
 
-        # Create sample tables
-        tables = [
-            Table(number=1, seats=2),
-            Table(number=2, seats=2),
-            Table(number=3, seats=4),
-            Table(number=4, seats=4),
-            Table(number=5, seats=6),
-            Table(number=6, seats=6),
-            Table(number=7, seats=7),
-            Table(number=8, seats=8),
-            Table(number=9, seats=9)
+        # Crea tavoli di esempio con diverse capacità
+        tavoli_default = [
+            Table(number=1, seats=2),  # Tavolo per due
+            Table(number=2, seats=2),  # Tavolo per due
+            Table(number=3, seats=4),  # Tavolo per quattro
+            Table(number=4, seats=4),  # Tavolo per quattro
+            Table(number=5, seats=6),  # Tavolo per sei
+            Table(number=6, seats=6),  # Tavolo per sei
+            Table(number=7, seats=7),  # Tavolo per sette
+            Table(number=8, seats=8),  # Tavolo per otto
+            Table(number=9, seats=9)   # Tavolo per nove
         ]
-        for table in tables:
-            db.session.add(table)
+        for tavolo in tavoli_default:
+            db.session.add(tavolo)
 
-        # Create default hours for all days of the week
-        default_hours = []
-        for day in range(7):  # 0 = Monday, 6 = Sunday
-            # Weekday hours (Monday-Friday)
-            if day < 5:
-                hours = RestaurantHours(
-                    day_of_week=day,
+        # Imposta orari di apertura per ogni giorno della settimana
+        for giorno in range(7):  # 0 = Lunedì, 6 = Domenica
+            # Orari giorni feriali (Lunedì-Venerdì)
+            if giorno < 6:
+                orari = RestaurantHours(
+                    day_of_week=giorno,
+                    # Orari pranzo feriali: 12:00-15:00
                     lunch_opening_time=time(12, 0),
                     lunch_closing_time=time(15, 0),
+                    # Orari cena feriali: 19:00-23:00
                     dinner_opening_time=time(19, 0),
                     dinner_closing_time=time(23, 0),
                     is_lunch_closed=False,
                     is_dinner_closed=False
                 )
-            # Weekend hours (Saturday-Sunday)
-            else:
-                hours = RestaurantHours(
-                    day_of_week=day,
-                    lunch_opening_time=time(12, 0),
-                    lunch_closing_time=time(16, 0),  # Longer lunch on weekends
-                    dinner_opening_time=time(19, 0),
-                    dinner_closing_time=time(23, 30),  # Longer dinner on weekends
-                    is_lunch_closed=False,
-                    is_dinner_closed=False
-                )
-            db.session.add(hours)
 
-        # Create default restaurant information
-        restaurant_info = RestaurantInfo(
+        # Crea informazioni predefinite del ristorante
+        info_ristorante = RestaurantInfo(
             name="La Tavola Italiana",
-            show_restaurant_name=True,  # Added new column
+            show_restaurant_name=True,
             welcome_text="Benvenuti nel nostro ristorante, dove la tradizione italiana incontra l'innovazione",
             description="""
             La Tavola Italiana è un ristorante che celebra l'autentica cucina italiana
@@ -86,22 +73,24 @@ def reset_db():
             address="Via Roma 123, 00100 Roma",
             parking_info="Ampio parcheggio gratuito disponibile per i nostri ospiti"
         )
-        db.session.add(restaurant_info)
+        db.session.add(info_ristorante)
 
-        # Commit changes
+        # Salva tutte le modifiche nel database
         db.session.commit()
 
-        print("\nDatabase reset successfully!")
-        print("\nAdmin credentials:")
+        # Stampa informazioni di conferma
+        print("\nDatabase reinizializzato con successo!")
+        print("\nCredenziali amministratore:")
         print("Email: admin@example.com")
         print("Password: Admin@123")
-        print("\nDefault hours:")
-        print("Weekdays (Mon-Fri):")
-        print("- Lunch: 12:00-15:00")
-        print("- Dinner: 19:00-23:00")
-        print("Weekends (Sat-Sun):")
-        print("- Lunch: 12:00-16:00")
-        print("- Dinner: 19:00-23:30")
+        print("\nOrari predefiniti:")
+        print("Giorni feriali (Lun-Ven):")
+        print("- Pranzo: 12:00-15:00")
+        print("- Cena: 19:00-23:00")
+        print("Weekend (Sab-Dom):")
+        print("- Pranzo: 12:00-16:00")
+        print("- Cena: 19:00-23:30")
 
+# Esegui il reset solo se lo script viene eseguito direttamente
 if __name__ == '__main__':
     reset_db()
