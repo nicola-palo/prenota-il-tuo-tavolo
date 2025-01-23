@@ -134,16 +134,18 @@ def admin_hours():
             if not day_hours:
                 day_hours = RestaurantHours(
                     day_of_week=day,
-                    lunch_opening_time=datetime.strptime('12:00', '%H:%M').time(),
-                    lunch_closing_time=datetime.strptime('15:00', '%H:%M').time(),
-                    dinner_opening_time=datetime.strptime('19:00', '%H:%M').time(),
-                    dinner_closing_time=datetime.strptime('23:00', '%H:%M').time(),
+                    lunch_opening_time=time(12, 0),
+                    lunch_closing_time=time(15, 0),
+                    dinner_opening_time=time(19, 0),
+                    dinner_closing_time=time(23, 0),
                     is_lunch_closed=False,
                     is_dinner_closed=False
                 )
                 db.session.add(day_hours)
-            hours[day] = day_hours
         db.session.commit()
+        
+        hours = {day: RestaurantHours.query.filter_by(day_of_week=day).first() for day in range(7)}
+        
         return render_template('admin/hours.html', hours=hours)
 
 @app.route('/admin/tables')
