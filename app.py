@@ -6,7 +6,7 @@ Gestisce configurazione, autenticazione e routing di base.
 # Importazione moduli e configurazione base Flask
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
 from models import db, User, RestaurantInfo, RestaurantHours
 from functools import wraps
 from api_routes import api as api_blueprint
