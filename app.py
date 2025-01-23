@@ -29,9 +29,16 @@ app.register_blueprint(api_blueprint, url_prefix='/api')
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or not current_user.is_admin:
+        if not current_user.is_authenticated:
             flash('Accesso non autorizzato')
             return redirect(url_for('index'))
+
+        with app.app_context():
+            user = db.session.merge(current_user)
+            if not user.is_admin:
+                flash('Accesso non autorizzato')
+                return redirect(url_for('index'))
+
         return f(*args, **kwargs)
     return decorated_function
 
@@ -132,20 +139,12 @@ def admin_hours():
         for day in range(7):
             day_hours = RestaurantHours.query.filter_by(day_of_week=day).first()
             if not day_hours:
-                day_hours = RestaurantHours(
-                    day_of_week=day,
-                    lunch_opening_time=time(12, 0),
-                    lunch_closing_time=time(15, 0),
-                    dinner_opening_time=time(19, 0),
-                    dinner_closing_time=time(23, 0),
-                    is_lunch_closed=False,
-                    is_dinner_closed=False
-                )
+                day_hours = RestaurantHours.get_default_hours()[day]
                 db.session.add(day_hours)
         db.session.commit()
-        
+
         hours = {day: RestaurantHours.query.filter_by(day_of_week=day).first() for day in range(7)}
-        
+
         return render_template('admin/hours.html', hours=hours)
 
 @app.route('/admin/tables')
@@ -164,7 +163,7 @@ def admin_theme():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        
+
         # Crea admin se non esiste
         admin = User.query.filter_by(email='admin@example.com').first()
         if not admin:
@@ -175,6 +174,6 @@ if __name__ == '__main__':
             print("\nAdmin credentials created:")
             print("Email: admin@example.com")
             print("Password: admin")
-        
+
         print("\nServer started! Access at http://127.0.0.1:5000")
         app.run(debug=True)
