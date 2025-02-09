@@ -336,16 +336,3 @@ describe('Prenotazioni', () => {
   });
 });
 ```
-
-## Changelog
-
-### v1.0.0 (2025-02-09)
-- Release iniziale
-- Implementazione sistema base di prenotazioni
-- Gestione tavoli e orari
-- Sistema di autenticazione
-
-### v1.1.0 (2025-02-10)
-- Aggiunto sistema di notifiche
-- Migliorata gestione errori
-- Aggiunte statistiche admin
