@@ -18,7 +18,6 @@
 - [FAQ](#faq)
 - [Troubleshooting](#troubleshooting)
 - [Testing](#testing)
-- [Changelog](#changelog)
 
 ## Introduzione
 
