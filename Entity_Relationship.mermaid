@@ -1,0 +1,70 @@
+erDiagram
+    User {
+        int id PK
+        string email
+        string password_hash
+        boolean is_admin
+        datetime created_at
+    }
+
+    Table {
+        int id PK
+        int number
+        int seats
+        boolean is_active
+        datetime created_at
+    }
+
+    Booking {
+        int id PK
+        int user_id FK
+        int table_id FK
+        date date
+        time time
+        int guests
+        text notes
+        string status
+        datetime created_at
+        datetime modified_at
+    }
+
+    RestaurantHours {
+        int id PK
+        int day_of_week
+        time lunch_opening_time
+        time lunch_closing_time
+        time dinner_opening_time
+        time dinner_closing_time
+        boolean is_lunch_closed
+        boolean is_dinner_closed
+        datetime created_at
+        datetime modified_at
+    }
+
+    RestaurantInfo {
+        int id PK
+        string name
+        boolean show_restaurant_name
+        text welcome_text
+        text description
+        string phone
+        string email
+        string address
+        text parking_info
+        string primary_color
+        string secondary_color
+        string background_color
+        string font_family
+        string base_font_size
+        string heading_font_size
+        string font_weight
+        string border_radius
+        string box_shadow
+        string logo_url
+        string navbar_title
+        datetime created_at
+        datetime modified_at
+    }
+
+    User ||--o{ Booking : "has"
+    Table ||--o{ Booking : "has"
