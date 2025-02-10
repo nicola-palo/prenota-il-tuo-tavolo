@@ -1,4 +1,4 @@
-# 🍽️ Restaurant Manager Pro
+# 🍽️ Restaurant Manager
 
 Sistema completo di gestione prenotazioni per ristoranti sviluppato con Flask e SQLAlchemy.
 
