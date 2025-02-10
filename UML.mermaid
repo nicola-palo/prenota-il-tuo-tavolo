@@ -1,0 +1,61 @@
+classDiagram
+    class App {
+        +configure()
+        +register_blueprints()
+    }
+    
+    class User {
+        +id: Integer
+        +username: String
+        +email: String
+        +password_hash: String
+        +role: String
+        +make_booking()
+        +cancel_booking()
+    }
+
+    class Table {
+        +id: Integer
+        +number: Integer
+        +capacity: Integer
+        +is_available()
+        +reserve()
+    }
+
+    class Booking {
+        +id: Integer
+        +user_id: Integer
+        +table_id: Integer
+        +date: DateTime
+        +status: String
+        +confirm()
+        +cancel()
+    }
+
+    class APIRoutes {
+        +get_tables()
+        +create_booking()
+        +update_booking()
+        +delete_booking()
+    }
+
+    class StaticFiles {
+        +css: Directory
+        +js: Directory
+        +admin: Directory
+    }
+
+    class Templates {
+        +base.html
+        +booking.html
+        +admin: Directory
+    }
+
+    App --> APIRoutes
+    App --> StaticFiles
+    App --> Templates
+    User --> Booking
+    Table --> Booking
+    APIRoutes --> User
+    APIRoutes --> Table
+    APIRoutes --> Booking
