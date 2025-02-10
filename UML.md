@@ -1,82 +1,92 @@
-# Restaurant Booking System Architecture
+# Restaurant Booking System - Class Diagram
 
-## Core Components
+## User Class
+- **Attributes**:
+  - `id`: Integer (Primary Key)
+  - `email`: String
+  - `password_hash`: String
+  - `is_admin`: Boolean
+  - `created_at`: DateTime
 
-### App (`app.py`)
-- Main Flask application
-- Handles configuration and routing
-- Database integration
+- **Methods**:
+  - `set_password(password)`: Sets a hashed password
+  - `check_password(password)`: Validates password
+  - `to_dict()`: Converts user data to dictionary
 
-### Models (`models.py`)
-```python
-class User:
-  - id: Integer
-  - username: String
-  - email: String
-  - role: String
-  
-class Table:
-  - id: Integer
-  - number: Integer
-  - capacity: Integer
-  
-class Booking:
-  - id: Integer
-  - user_id: Integer
-  - table_id: Integer
-  - date: DateTime
-  - status: String
-```
+## Table Class
+- **Attributes**:
+  - `id`: Integer (Primary Key)
+  - `number`: Integer
+  - `seats`: Integer
+  - `is_active`: Boolean
+  - `created_at`: DateTime
 
-### API Routes (`api_routes.py`)
-- CRUD operations
-- Business logic for bookings
-- Authentication handling
+- **Methods**:
+  - `to_dict()`: Converts table data to dictionary
 
-## Frontend Structure
+## Booking Class
+- **Attributes**:
+  - `id`: Integer (Primary Key)
+  - `user_id`: Integer (Foreign Key to User)
+  - `table_id`: Integer (Foreign Key to Table)
+  - `date`: Date
+  - `time`: Time
+  - `guests`: Integer
+  - `notes`: Text
+  - `status`: String
+  - `created_at`: DateTime
+  - `modified_at`: DateTime
 
-### Static Files
-```
-static/
-├── css/
-│   └── style.css
-├── js/
-│   ├── api-client.js
-│   ├── main.js
-│   ├── booking-page.js
-│   ├── table-booking-handler.js
-│   ├── color-manager.js
-│   └── restaurant-hours-manager.js
-└── admin/
-    ├── hours-management.js
-    ├── tables-management.js
-    └── theme-management.js
-```
+- **Methods**:
+  - `to_dict()`: Converts booking data to dictionary
+  - `is_past()`: Checks if booking is in the past
 
-### Templates
-```
-templates/
-├── base.html
-├── booking.html
-├── index.html
-├── login.html
-├── register.html
-├── tables_availability.html
-└── admin/
-    ├── dashboard.html
-    ├── hours.html
-    ├── restaurant_info.html
-    ├── tables.html
-    └── theme.html
-```
+## RestaurantHours Class
+- **Attributes**:
+  - `id`: Integer (Primary Key)
+  - `day_of_week`: Integer
+  - `lunch_opening_time`: Time
+  - `lunch_closing_time`: Time
+  - `dinner_opening_time`: Time
+  - `dinner_closing_time`: Time
+  - `is_lunch_closed`: Boolean
+  - `is_dinner_closed`: Boolean
+  - `created_at`: DateTime
+  - `modified_at`: DateTime
 
-## Additional Files
-- `requirements.txt`: Python dependencies
-- `test.py`: Unit tests
-- `reset-db.py`: Database initialization
+- **Methods**:
+  - `get_default_hours()`: Retrieves default restaurant hours
+  - `to_dict()`: Converts hours data to dictionary
 
-## Class Relationships
-- User -> Booking: One-to-Many
-- Table -> Booking: One-to-Many
-- App -> Models: Dependency
-- APIRoutes -> Models: Dependency
+## RestaurantInfo Class
+- **Attributes**:
+  - `id`: Integer (Primary Key)
+  - `name`: String
+  - `show_restaurant_name`: Boolean
+  - `welcome_text`: Text
+  - `description`: Text
+  - `phone`: String
+  - `email`: String
+  - `address`: String
+  - `parking_info`: Text
+  - `primary_color`: String
+  - `secondary_color`: String
+  - `background_color`: String
+  - `font_family`: String
+  - `base_font_size`: String
+  - `heading_font_size`: String
+  - `font_weight`: String
+  - `border_radius`: String
+  - `box_shadow`: String
+  - `logo_url`: String
+  - `navbar_title`: String
+  - `created_at`: DateTime
+  - `modified_at`: DateTime
+
+- **Methods**:
+  - `get_default_info()`: Retrieves default restaurant information
+  - `to_dict()`: Converts restaurant info to dictionary
+
+## Relationships
+- One User can have multiple Bookings (1:*)
+- One Table can have multiple Bookings (1:*)
