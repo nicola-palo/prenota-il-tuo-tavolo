@@ -1,61 +1,80 @@
 classDiagram
-    class App {
-        +configure()
-        +register_blueprints()
-    }
-    
     class User {
         +id: Integer
-        +username: String
         +email: String
         +password_hash: String
-        +role: String
-        +make_booking()
-        +cancel_booking()
+        +is_admin: Boolean
+        +created_at: DateTime
+        +set_password(password)
+        +check_password(password)
+        +to_dict()
     }
 
     class Table {
         +id: Integer
         +number: Integer
-        +capacity: Integer
-        +is_available()
-        +reserve()
+        +seats: Integer
+        +is_active: Boolean
+        +created_at: DateTime
+        +to_dict()
     }
 
     class Booking {
         +id: Integer
         +user_id: Integer
         +table_id: Integer
-        +date: DateTime
+        +date: Date
+        +time: Time
+        +guests: Integer
+        +notes: Text
         +status: String
-        +confirm()
-        +cancel()
+        +created_at: DateTime
+        +modified_at: DateTime
+        +to_dict()
+        +is_past()
     }
 
-    class APIRoutes {
-        +get_tables()
-        +create_booking()
-        +update_booking()
-        +delete_booking()
+    class RestaurantHours {
+        +id: Integer
+        +day_of_week: Integer
+        +lunch_opening_time: Time
+        +lunch_closing_time: Time
+        +dinner_opening_time: Time
+        +dinner_closing_time: Time
+        +is_lunch_closed: Boolean
+        +is_dinner_closed: Boolean
+        +created_at: DateTime
+        +modified_at: DateTime
+        +get_default_hours()
+        +to_dict()
     }
 
-    class StaticFiles {
-        +css: Directory
-        +js: Directory
-        +admin: Directory
+    class RestaurantInfo {
+        +id: Integer
+        +name: String
+        +show_restaurant_name: Boolean
+        +welcome_text: Text
+        +description: Text
+        +phone: String
+        +email: String
+        +address: String
+        +parking_info: Text
+        +primary_color: String
+        +secondary_color: String
+        +background_color: String
+        +font_family: String
+        +base_font_size: String
+        +heading_font_size: String
+        +font_weight: String
+        +border_radius: String
+        +box_shadow: String
+        +logo_url: String
+        +navbar_title: String
+        +created_at: DateTime
+        +modified_at: DateTime
+        +get_default_info()
+        +to_dict()
     }
 
-    class Templates {
-        +base.html
-        +booking.html
-        +admin: Directory
-    }
-
-    App --> APIRoutes
-    App --> StaticFiles
-    App --> Templates
-    User --> Booking
-    Table --> Booking
-    APIRoutes --> User
-    APIRoutes --> Table
-    APIRoutes --> Booking
+    User "1" -- "*" Booking : has
+    Table "1" -- "*" Booking : has
